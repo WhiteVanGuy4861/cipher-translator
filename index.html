@@ -37,11 +37,17 @@
       flex-wrap: wrap;
       gap: 8px;
     }
+    .instruction {
+      font-size: 0.9em;
+      margin-bottom: 16px;
+      color: lime;
+    }
   </style>
 </head>
 <body>
 
   <h1>Toro Cipher Translator</h1>
+  <p class="instruction">Use <code>/</code> for encrypting spaces, <code>27</code> for decrypting them</p>
 
   <h3>Encrypt</h3>
   <input type="text" id="encryptInput" placeholder="Type text to encrypt..." oninput="encryptText()">
@@ -84,7 +90,9 @@
       let output = [];
 
       for (let char of input) {
-        if (/[a-zA-Z]/.test(char)) {
+        if (char === "/") {
+          output.push(27);
+        } else if (/[a-zA-Z]/.test(char)) {
           output.push(shiftLetterEncrypt(char));
         } else if (/\d/.test(char)) {
           output.push(shiftDigitEncrypt(char));
@@ -98,6 +106,9 @@
 
     // Decryption helpers
     function numberToOriginalLetter(n) {
+      if (parseInt(n) === 27) {
+        return "/";
+      }
       let shifted = ((parseInt(n) - 7 - 1 + 26) % 26) + 1;
       return numberToLetter(shifted);
     }
@@ -128,7 +139,7 @@
     // Copy to clipboard function without alert
     function copyText(elementId) {
       const text = document.getElementById(elementId).value;
-      if (!text) return; // do nothing if empty
+      if (!text) return;
       navigator.clipboard.writeText(text).catch(() => {
         // fail silently
       });
