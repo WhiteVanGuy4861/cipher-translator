@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cipher Translator</title>
+  <style>
+    body {
+      background-color: black;
+      color: lime;
+      font-family: monospace;
+      padding: 20px;
+    }
+    textarea, input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      background-color: #111;
+      color: lime;
+      border: 1px solid lime;
+    }
+    button {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Toro Cipher Translator</h1>
+
+  <h3>Encrypt</h3>
+  <input type="text" id="encryptInput" placeholder="Type text to encrypt..." oninput="encryptText()">
+  <textarea id="encryptOutput" readonly placeholder="Encrypted result..."></textarea>
+
+  <h3>Decrypt</h3>
+  <input type="text" id="decryptInput" placeholder="Type cipher to decrypt..." oninput="decryptText()">
+  <textarea id="decryptOutput" readonly placeholder="Decrypted result..."></textarea>
+
+  <script>
+    // Encryption helpers
+    function letterToNumber(c) {
+      return c.toUpperCase().charCodeAt(0) - 65 + 1;
+    }
+
+    function numberToLetter(n) {
+      return String.fromCharCode(64 + n);
+    }
+
+    function shiftLetterEncrypt(c) {
+      let num = letterToNumber(c);
+      return ((num + 6) % 26) + 1; // +7 shift
+    }
+
+    function shiftDigitEncrypt(d) {
+      let shifted = (parseInt(d) + 7) % 10;
+      return numberToLetter(shifted + 1); // 0 → A
+    }
+
+    function encryptText() {
+      const input = document.getElementById("encryptInput").value;
+      let output = [];
+
+      for (let char of input) {
+        if (/[a-zA-Z]/.test(char)) {
+          output.push(shiftLetterEncrypt(char));
+        } else if (/\d/.test(char)) {
+          output.push(shiftDigitEncrypt(char));
+        } else {
+          output.push(char);
+        }
+      }
+
+      document.getElementById("encryptOutput").value = output.join(" ");
+    }
+
+    // Decryption helpers
+    function numberToOriginalLetter(n) {
+      let shifted = ((parseInt(n) - 7 - 1 + 26) % 26) + 1;
+      return numberToLetter(shifted);
+    }
+
+    function letterToOriginalDigit(c) {
+      let num = c.toUpperCase().charCodeAt(0) - 65;
+      let original = (num - 7 + 10) % 10;
+      return original.toString();
+    }
+
+    function decryptText() {
+      const input = document.getElementById("decryptInput").value.trim().split(/\s+/);
+      let output = [];
+
+      for (let token of input) {
+        if (/^\d+$/.test(token)) {
+          output.push(numberToOriginalLetter(token));
+        } else if (/^[A-Ja-j]$/.test(token)) {
+          output.push(letterToOriginalDigit(token));
+        } else {
+          output.push(token);
+        }
+      }
+
+      document.getElementById("decryptOutput").value = output.join("");
+    }
+  </script>
+
+</body>
+</html>
