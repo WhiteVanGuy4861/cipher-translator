@@ -9,16 +9,33 @@
       font-family: monospace;
       padding: 20px;
     }
-    textarea, input, button {
+    textarea, input {
       width: 100%;
       padding: 10px;
       margin: 8px 0;
       background-color: #111;
       color: lime;
       border: 1px solid lime;
+      box-sizing: border-box;
     }
     button {
       cursor: pointer;
+      padding: 8px 16px;
+      margin: 4px 8px 12px 0;
+      background-color: #222;
+      border: 1px solid lime;
+      color: lime;
+      transition: background-color 0.3s;
+      user-select: none;
+    }
+    button:hover {
+      background-color: lime;
+      color: black;
+    }
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
     }
   </style>
 </head>
@@ -28,10 +45,18 @@
 
   <h3>Encrypt</h3>
   <input type="text" id="encryptInput" placeholder="Type text to encrypt..." oninput="encryptText()">
+  <div class="button-group">
+    <button onclick="pasteText('encryptInput', encryptText)">Paste</button>
+    <button onclick="copyText('encryptOutput')">Copy Encrypted</button>
+  </div>
   <textarea id="encryptOutput" readonly placeholder="Encrypted result..."></textarea>
 
   <h3>Decrypt</h3>
   <input type="text" id="decryptInput" placeholder="Type cipher to decrypt..." oninput="decryptText()">
+  <div class="button-group">
+    <button onclick="pasteText('decryptInput', decryptText)">Paste</button>
+    <button onclick="copyText('decryptOutput')">Copy Decrypted</button>
+  </div>
   <textarea id="decryptOutput" readonly placeholder="Decrypted result..."></textarea>
 
   <script>
@@ -98,6 +123,25 @@
       }
 
       document.getElementById("decryptOutput").value = output.join("");
+    }
+
+    // Copy to clipboard function without alert
+    function copyText(elementId) {
+      const text = document.getElementById(elementId).value;
+      if (!text) return; // do nothing if empty
+      navigator.clipboard.writeText(text).catch(() => {
+        // fail silently
+      });
+    }
+
+    // Paste from clipboard function without alert
+    function pasteText(elementId, callback) {
+      navigator.clipboard.readText().then(text => {
+        document.getElementById(elementId).value = text;
+        if (typeof callback === "function") callback();
+      }).catch(() => {
+        // fail silently
+      });
     }
   </script>
 
